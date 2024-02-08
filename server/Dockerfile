@@ -2,11 +2,17 @@ FROM node:latest
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json /app
 
-RUN npm install
-RUN npm run migration
+RUN npm ci
 
-EXPOSE 8000
+COPY . /app
+
+#RUN npm run migration
+
+# COPY migration.js ./
+# COPY start-server.sh ./
+# RUN chmod +x ./start-server.sh
+# ENTRYPOINT ["./start-server.sh"]
 
 CMD ["npm", "start"]

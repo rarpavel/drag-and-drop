@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node index.js",
+    "start": "node migration.js & node index.js",
     "migration": "node migration.js"
   },
   "dependencies": {

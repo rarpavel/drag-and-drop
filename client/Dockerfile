@@ -2,10 +2,10 @@ FROM node:latest
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json /app
 
-RUN npm install
-RUN npm run build
+RUN npm ci --legacy-peer-deps
 
+COPY . /app
 
 CMD ["npm", "start"]
