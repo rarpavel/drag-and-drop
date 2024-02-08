@@ -1,8 +1,20 @@
 import { useQuery, useMutation } from "@apollo/client";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useEffect, useState, useCallback } from "react";
-import { ModalItem, Loader, DroppableTitle, DraggableItem } from "./components";
-import { GET_DASHBOARD, MOVE_TASK, DELETE_TASK, CREATE_TASK } from "./queries";
+import {
+  ModalItem,
+  Loader,
+  DroppableTitle,
+  DraggableItem,
+  ModalItemEdit,
+} from "./components";
+import {
+  GET_DASHBOARD,
+  MOVE_TASK,
+  DELETE_TASK,
+  CREATE_TASK,
+  EDIT_TASK,
+} from "./queries";
 
 function App() {
   const { loading, data, refetch } = useQuery(GET_DASHBOARD);
@@ -11,9 +23,12 @@ function App() {
     useMutation(DELETE_TASK);
   const [createTask, { data: dataCreate, loadingCreate }] =
     useMutation(CREATE_TASK);
+  const [editTask, { data: dataEdit, loadingEdit }] = useMutation(EDIT_TASK);
   const [list, setList] = useState([]);
   const [statusId, setStatusId] = useState(null);
   const [isShowItemModal, setIsShowItemModal] = useState(false);
+  const [editedItem, setEditedItem] = useState(null);
+  const [isShowItemEditModal, setIsShowItemEditModal] = useState(false);
   const grid = 8;
 
   useEffect(() => {
@@ -23,10 +38,10 @@ function App() {
   }, [dataCreate]);
 
   useEffect(() => {
-    if (dataCreate || dataDelete || dataMove) {
+    if (dataCreate || dataDelete || dataMove || dataEdit) {
       refetch();
     }
-  }, [dataCreate, dataDelete, dataMove, refetch]);
+  }, [dataCreate, dataDelete, dataMove, dataEdit, refetch]);
 
   useEffect(() => {
     if (data) {
@@ -34,18 +49,30 @@ function App() {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (dataEdit) {
+      setIsShowItemEditModal(false);
+    }
+  }, [dataEdit]);
+
   const onDragEnd = useCallback(
     (result) => {
       const { source, destination, ...rest } = result;
-
       const destinationTaskStatusId = destination?.droppableId;
       const sourceTaskStatusId = source?.droppableId;
       const destinationTaskOrder = destination?.index;
+      const sourceTaskOrder = source?.index;
       const sourceTaskId = rest?.draggableId;
+
+      if (
+        destinationTaskStatusId === sourceTaskStatusId &&
+        destinationTaskOrder === sourceTaskOrder
+      ) {
+        return;
+      }
 
       const listOld = [...list];
       let sourceItem = null;
-
       const listNew = listOld?.map((statusItem) => {
         if (statusItem?.status?._id === sourceTaskStatusId) {
           sourceItem = statusItem?.tasks.filter(
@@ -65,7 +92,6 @@ function App() {
         if (destinationItem?.status?._id === destinationTaskStatusId) {
           const tasks = [...destinationItem?.tasks];
           tasks.splice(destinationTaskOrder, 0, sourceItem);
-
           const newDestinationItem = {
             destinationItem,
             tasks,
@@ -75,7 +101,6 @@ function App() {
         return destinationItem;
       });
       setList(destinationList);
-
       setTimeout(() => {
         moveTask({
           variables: {
@@ -103,9 +128,20 @@ function App() {
     });
   };
 
+  const handleEditItem = (item) => {
+    setEditedItem(item);
+    setIsShowItemEditModal(true);
+  };
+
   const handleAddItem = ({ value }) => {
     createTask({
       variables: { name: value, status: statusId },
+    });
+  };
+
+  const handleAddItemEdit = ({ value }) => {
+    editTask({
+      variables: { name: value, id: editedItem?._id },
     });
   };
 
@@ -116,13 +152,23 @@ function App() {
 
   return (
     <div className="flex flex-col w-screen h-full min-h-full overflow-auto text-gray-700 bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 relative">
-      {loading || loadingMove || loadingDelete || loadingCreate ? (
+      {loading ||
+      loadingMove ||
+      loadingDelete ||
+      loadingCreate ||
+      loadingEdit ? (
         <Loader />
       ) : null}
       <ModalItem
         handleAction={handleAddItem}
         handleClose={() => setIsShowItemModal(false)}
         show={isShowItemModal}
+      />
+      <ModalItemEdit
+        valueProp={editedItem?.name}
+        handleAction={handleAddItemEdit}
+        handleClose={() => setIsShowItemEditModal(false)}
+        show={isShowItemEditModal}
       />
       <div className="flex min-h-full">
         <DragDropContext onDragEnd={onDragEnd}>
@@ -150,9 +196,10 @@ function App() {
                     >
                       {(provided) => (
                         <DraggableItem
-                          name={task?.name}
+                          item={task}
                           provided={provided}
                           actionDelete={() => handleDeleteItem(task._id)}
+                          actionEdit={() => handleEditItem(task)}
                         />
                       )}
                     </Draggable>

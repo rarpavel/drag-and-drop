@@ -27,7 +27,7 @@ const schema = buildSchema(`
 
   type Mutation {
     createTask(name: String!, status: String!): Task
-    updateTask(id: ID!, name: String!, order: Float!, status: String!): Task
+    editTask(id: String!, name: String!): Task
     deleteTask(id: String!): Task
     moveTask(sourceTaskId: String!, sourceTaskStatusId: String!, destinationTaskStatusId: String!, destinationTaskOrder: Float!): Task
     deleteStatus(id: ID!): Status

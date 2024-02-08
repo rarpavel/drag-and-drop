@@ -9,6 +9,7 @@ const app = express();
 app.use(cors())
 
 // Connect to MongoDB
+// mongoose.connect("mongodb://localhost:27017/graphql-demo", {
 mongoose.connect("mongodb://mongo:27017/graphql-demo", {
   useNewUrlParser: true,
   useUnifiedTopology: true,

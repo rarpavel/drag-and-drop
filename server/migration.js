@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Status = require('./models/Status'); 
 
+// mongoose.connect('mongodb://localhost:27017/graphql-demo', {
 mongoose.connect('mongodb://mongo:27017/graphql-demo', {
   useNewUrlParser: true,
   useUnifiedTopology: true

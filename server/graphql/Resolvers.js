@@ -33,6 +33,7 @@ const resolvers = {
     moveTask: async ({ sourceTaskId, sourceTaskStatusId, destinationTaskStatusId, destinationTaskOrder }) => {
         try {
           const task = await Task.findById(sourceTaskId);
+          console.log(sourceTaskId, sourceTaskStatusId, destinationTaskStatusId, destinationTaskOrder);
           if (task) {
                 task.order = destinationTaskOrder;
                 task.status = destinationTaskStatusId;
@@ -62,9 +63,6 @@ const resolvers = {
                         })
                     );
                 }
-            
-            
-            
           } else {
             throw new Error("There is no such Task");
           }
@@ -92,6 +90,19 @@ const resolvers = {
             return result;
         } catch (err) {
             throw new Error("Error retrieving tasks");
+        }
+    },
+    editTask: async ({ name, id }) => {
+        try {
+            const task = await Task.findById(id);
+            if (task) {
+                task.name = name;
+                await task.save();
+            }
+            return task;
+        } catch (err) {
+            console.log('error', err);
+          throw new Error("Error edit task");
         }
     },
     createTask: async ({ name, status }) => {

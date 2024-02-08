@@ -4,9 +4,7 @@
 
 - Frontend: React / Hooks + Tailwind css (or equivalent) / Apollo Client GraphQL (no
 redux preferably)
-- Backend: Node / Express / Mongoose
-- DB: Mongo
-Notes:
+- Backend: Node / Express / MongoDB / Mongoose
 - The Trello/Kanban like interface must be implemented from scratch not re-using a fully
 featured Kanban board package.
 - However the drag and drop functionality can leverage a react library
@@ -26,7 +24,7 @@ of cards)
 
 ## Installation
 
-First of all run the docker locally
+First of all run the docker locally, than run the next command
 
 ```bash
   BUILD=1 ./start.sh

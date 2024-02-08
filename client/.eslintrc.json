@@ -1,14 +1,16 @@
 {
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "plugins": ["react", "react-hooks", "prettier"],
+  "ignorePatterns": ["/build"],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": 0,
     "linebreak-style": ["error", "unix"],
     "semi": ["error", "always"],
     "react/react-in-jsx-scope": "off",
     "no-undef": "off",
     "react/prop-types": "off",
     "no-unsafe-optional-chaining": "off",
+    "no-unused-vars": "off",
     "react/no-unescaped-entities": "off"
   }
 }

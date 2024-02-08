@@ -49,3 +49,11 @@ export const CREATE_TASK = gql`
     }
   }
 `;
+
+export const EDIT_TASK = gql`
+  mutation editTaskFunction($name: String!, $id: String!) {
+    editTask(name: $name, id: $id) {
+      name
+    }
+  }
+`;
